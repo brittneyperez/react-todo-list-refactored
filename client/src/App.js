@@ -1,29 +1,20 @@
 import './App.css';
 import React, { useState } from 'react';
+import TodoList from './components/TodoList';
 
 function App() {
   
   const [ newTodo, setNewTodo ] = useState("");
-  /* Below array destructure syntax is equivalent to:
-  const newTodoStateArr = useState("");
-  const newTodo = newTodoStateArr[0];
-  const setNewTodo = newTodoStateArr[1];
-  */
-  
   const [ todoList, setTodoList ] = useState([]);
   
   const changeTextInputHandler = (e) => {
     setNewTodo(e.target.value);
   }
+  
   const handleNewTodoSubmit = (e) => {
     e.preventDefault();
-    /*
-    This code mutates data: todoList.push(newTodo).
-    We want to create an array that stores the new item,
-    and for that we need to use the spread opertator.
-    */
     if (newTodo.length === 0) {
-      return; // prevents submitting empty data
+      return;
     }
     
     const todoItemContent = {
@@ -31,8 +22,7 @@ function App() {
       complete: false
     }
     
-    // * setTodoList and pass in a brand new array containing all current todo items plus 1 more
-    setTodoList([...todoList, todoItemContent]); // replace newTodo with todoItemContent
+    setTodoList([...todoList, todoItemContent]);
     setNewTodo("");
   }
   
@@ -40,9 +30,6 @@ function App() {
     const updatedTodoList = todoList.map((todoItem, i) => {
       if (idx === i) {
         todoItem.complete = !todoItem.complete;
-        /* ? To avoid mutating the todoItem directly, do this:
-        const updatedTodoItem = { ...todoItem, complete: !todoItem.complete };
-        return updatedTodoItem; */
       }
       return todoItem;
     });
@@ -50,8 +37,8 @@ function App() {
   }
   
   const handleTodoItemDelete = (delIdx) => {
-    const filteredTodoItems = todoList.filter((_todoItem, i) => { // even tho todoItem is unused, we need it to access the idx
-      return i !== delIdx // if i is not the to be deleted item ? keep it : delete it if idx matches
+    const filteredTodoItems = todoList.filter((_todoItem, i) => {
+      return i !== delIdx
     });
     setTodoList(filteredTodoItems);
   }
@@ -71,18 +58,14 @@ function App() {
         <hr />
         
         <h2>Todo List</h2>
-        {todoList.map((todoItem, i) => { // make an array of the todoItems (the callback func, and the index)
-          const todoClasses = [];
-          if (todoItem.complete) {
-            todoClasses.push("text-decoration-line-through")
-          }
-          return (
-            <div key={i} className='mb-2 d-flex justify-content-center align-items-center'>
-              <input checked={todoItem.complete} onChange={(e) => {handleToggleComplete(i);}} type="checkbox" className='me-5' />
-              <span className={todoClasses.join(" ")}>{ todoItem.text }</span>
-              <button className='btn btn-danger ms-5' onClick={(e) => {handleTodoItemDelete(i)}}>Delete</button>
-            </div>
-          );
+        {todoList.map((todoItem, i) => {
+          return <TodoList
+            key={i}
+            index={i}
+            listItem={todoItem}
+            handleToggleComplete={handleToggleComplete}
+            handleTodoItemDelete={handleTodoItemDelete}
+          />
         })}
       </div>
       
